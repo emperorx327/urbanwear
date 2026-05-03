@@ -1,8 +1,30 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase';
 
 export default function Login() {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      navigate('/');
+    } catch (err) {
+      setError('Invalid email or password');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen w-full flex flex-col md:flex-row">
@@ -30,12 +52,14 @@ export default function Login() {
             </p>
           </div>
 
-          <div className="flex flex-col gap-4 sm:gap-5">
+          <form className="flex flex-col gap-4 sm:gap-5" onSubmit={handleLogin}>
             <div>
               <label className="mb-2 sm:mb-3 block text-xs sm:text-sm font-medium text-black">Email Address</label>
               <input
                 type="email"
                 placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="h-11 sm:h-12 w-full border border-black bg-transparent px-3 text-sm text-black outline-none placeholder:text-[#AAAAAA] focus:border-black"
               />
             </div>
@@ -46,6 +70,8 @@ export default function Login() {
                 <input
                   type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••••••••••••••••••••••••••••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="h-11 sm:h-12 w-full border border-black bg-transparent px-3 pr-12 text-sm text-black outline-none placeholder:text-[#AAAAAA] focus:border-black"
                 />
                 <button
@@ -72,20 +98,23 @@ export default function Login() {
                 </button>
               </div>
             </div>
-          </div>
 
-          <div className="mb-6 mt-4 sm:mt-6 flex justify-end">
-            <a href="#" className="text-xs sm:text-sm text-[#404040] hover:underline">
-              Forgot password?
-            </a>
-          </div>
+            <div className="mb-6 mt-4 sm:mt-6 flex justify-end">
+              <a href="#" className="text-xs sm:text-sm text-[#404040] hover:underline">
+                Forgot password?
+              </a>
+            </div>
 
-          <button
-            type="button"
-            className="mb-6 h-12 sm:h-14 w-full rounded-full bg-black text-sm sm:text-base font-bold text-white hover:bg-gray-900 transition-colors"
-          >
-            LOGIN
-          </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="h-12 sm:h-14 w-full rounded-full bg-black text-sm sm:text-base font-bold text-white hover:bg-gray-900 transition-colors disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {loading ? 'Signing in...' : 'LOGIN'}
+            </button>
+
+            {error ? <p className="text-sm text-red-600">{error}</p> : null}
+          </form>
 
           <p className="text-xs sm:text-sm text-[#404040]">
             Dont have an account?{' '}

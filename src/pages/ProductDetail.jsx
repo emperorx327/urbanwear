@@ -1,25 +1,74 @@
 import { useParams, Link as RouterLink, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 
 export default function ProductDetail() {
   const { id } = useParams();
+  const { addToCart } = useCart();
+  const { user } = useAuth();
   const navigate = useNavigate();
-  const [selectedSize, setSelectedSize] = useState('M');
+  const [selectedSize, setSelectedSize] = useState('');
   const [quantity, setQuantity] = useState(1);
-  const [selectedColor, setSelectedColor] = useState('#111111');
+  const [selectedColor, setSelectedColor] = useState('Black');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
 
   const product = {
     name: 'Shadow Oversized Hoodie',
     price: '$79.99',
     rating: 4.2,
     reviews: 128,
-    colors: ['#111111', '#555555', '#EEEEEE'],
+    image: '',
+    colors: [
+      { name: 'Black', value: '#111111' },
+      { name: 'Gray', value: '#555555' },
+      { name: 'White', value: '#EEEEEE' },
+    ],
   };
 
   const sizes = ['XS', 'S', 'M', 'L', 'XL'];
 
   const incrementQuantity = () => setQuantity((q) => q + 1);
   const decrementQuantity = () => setQuantity((q) => Math.max(1, q - 1));
+
+  useEffect(() => {
+    if (!success) {
+      return undefined;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      navigate('/cart');
+    }, 2000);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [navigate, success]);
+
+  const handleAddToCart = async () => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
+    if (!selectedSize) {
+      setError('Please select a size');
+      return;
+    }
+
+    setError('');
+
+    await addToCart({
+      name: product.name,
+      price: product.price,
+      size: selectedSize,
+      color: selectedColor,
+      quantity,
+      image: product.image,
+      productId: id,
+    });
+
+    setSuccess(true);
+  };
 
   return (
     <div className="w-full bg-white px-5 sm:px-8 md:px-10 lg:px-20 pt-8 sm:pt-10 md:pt-12 lg:pt-16">
@@ -79,18 +128,19 @@ export default function ProductDetail() {
           {/* Color Selector */}
           <div className="mb-5 sm:mb-6 md:mb-8 lg:mb-6">
             <label className="text-xs sm:text-sm lg:text-[13px] font-medium text-black block mb-2 md:mb-3 lg:mb-2">
-              Color: {selectedColor === '#111111' ? 'Black' : selectedColor === '#555555' ? 'Gray' : 'White'}
+              Color: {selectedColor}
             </label>
             <div className="flex gap-2 md:gap-3 lg:gap-3">
               {product.colors.map((color) => (
                 <button
-                  key={color}
-                  onClick={() => setSelectedColor(color)}
+                  key={color.name}
+                  type="button"
+                  onClick={() => setSelectedColor(color.name)}
                   className={`w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-7 lg:h-7 rounded-full border-2 transition ${
-                    selectedColor === color ? 'border-black' : 'border-gray-300'
+                    selectedColor === color.name ? 'border-black' : 'border-gray-300'
                   }`}
-                  style={{ backgroundColor: color }}
-                  aria-label={`Color ${color}`}
+                  style={{ backgroundColor: color.value }}
+                  aria-label={`Color ${color.name}`}
                 ></button>
               ))}
             </div>
@@ -105,6 +155,7 @@ export default function ProductDetail() {
               {sizes.map((size) => (
                 <button
                   key={size}
+                  type="button"
                   onClick={() => setSelectedSize(size)}
                   className={`w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 lg:w-12 lg:h-12 border text-xs sm:text-sm font-medium transition ${
                     selectedSize === size
@@ -125,6 +176,7 @@ export default function ProductDetail() {
             </label>
             <div className="flex border border-[#DDDDDD] w-fit">
               <button
+                type="button"
                 onClick={decrementQuantity}
                 className="w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 lg:w-10 lg:h-10 flex items-center justify-center text-lg font-light hover:bg-gray-100 transition"
               >
@@ -134,6 +186,7 @@ export default function ProductDetail() {
                 {quantity}
               </div>
               <button
+                type="button"
                 onClick={incrementQuantity}
                 className="w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 lg:w-10 lg:h-10 flex items-center justify-center text-lg font-light hover:bg-gray-100 transition"
               >
@@ -144,11 +197,15 @@ export default function ProductDetail() {
 
           {/* ADD TO CART Button */}
           <button
-            onClick={() => navigate('/cart')}
+            type="button"
+            onClick={handleAddToCart}
             className="w-full md:w-96 h-12 sm:h-14 md:h-16 lg:h-14 bg-[#111111] text-white text-sm sm:text-base lg:text-[15px] font-bold rounded hover:bg-gray-900 transition mt-5 sm:mt-6 md:mt-8 lg:mt-6"
           >
             ADD TO CART
           </button>
+
+          {error ? <p className="mt-3 text-sm text-red-600">{error}</p> : null}
+          {success ? <p className="mt-3 text-sm text-green-600">Added to cart!</p> : null}
 
           {/* ADD TO WISHLIST Button */}
           <button className="w-full md:w-96 h-12 sm:h-14 md:h-16 lg:h-14 border border-[#111111] text-[#111111] text-sm sm:text-base lg:text-[15px] font-bold rounded hover:bg-gray-100 transition mt-2 sm:mt-3 md:mt-4 lg:mt-3">

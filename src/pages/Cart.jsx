@@ -1,41 +1,50 @@
 import { useNavigate } from 'react-router-dom';
-
-const cartItems = [
-  {
-    id: 1,
-    name: 'Shadow Oversized Hoodie',
-    size: 'M',
-    color: 'Black',
-    price: '$79.99',
-    quantity: 1,
-  },
-  {
-    id: 2,
-    name: 'Essential Boxy Tee',
-    size: 'L',
-    color: 'Gray',
-    price: '$39.99',
-    quantity: 2,
-  },
-  {
-    id: 3,
-    name: 'Urban Cargo Pants',
-    size: 'S',
-    color: 'Black',
-    price: '$89.99',
-    quantity: 1,
-  },
-];
+import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 
 export default function Cart() {
+  const { cartItems, removeFromCart, updateQuantity, cartTotal, cartCount } = useCart();
+  const { user } = useAuth();
   const navigate = useNavigate();
+  const tax = cartTotal * 0.08;
+  const total = cartTotal + tax;
+
+  if (!user) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center px-4 text-center">
+        <h2 className="text-2xl font-bold text-black">Please login to view your cart</h2>
+        <button
+          type="button"
+          onClick={() => navigate('/login')}
+          className="mt-4 h-12 rounded-full bg-black px-6 text-sm font-bold text-white hover:bg-gray-900 transition-colors"
+        >
+          Login
+        </button>
+      </div>
+    );
+  }
+
+  if (cartItems.length === 0) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center px-4 text-center">
+        <h2 className="text-2xl font-bold text-black">Your cart is empty</h2>
+        <button
+          type="button"
+          onClick={() => navigate('/shop')}
+          className="mt-4 h-12 rounded-full bg-black px-6 text-sm font-bold text-white hover:bg-gray-900 transition-colors"
+        >
+          Shop Now
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full min-h-screen bg-white px-4 sm:px-6 md:px-8 lg:px-20 py-8 sm:py-10 md:py-12">
       <div className="mx-auto max-w-7xl">
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-10">
           <section className="w-full lg:w-[60%]">
-            <h1 className="text-[26px] sm:text-[28px] md:text-[32px] font-bold text-black">YOUR CART (3)</h1>
+            <h1 className="text-[26px] sm:text-[28px] md:text-[32px] font-bold text-black">YOUR CART ({cartCount})</h1>
             <div className="mt-4 h-px w-full bg-[#EEEEEE]" />
 
             <div className="mt-6 flex flex-col">
@@ -55,22 +64,36 @@ export default function Cart() {
                       </div>
 
                       <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                        <p className="text-[15px] font-bold text-black">{item.price}</p>
+                        <p className="text-[15px] font-bold text-black">
+                          ${((typeof item.price === 'string' ? parseFloat(item.price.replace('$', '')) : Number(item.price || 0)) * (item.quantity || 1)).toFixed(2)}
+                        </p>
 
                         <div className="flex items-center gap-3">
                           <div className="flex items-center">
-                            <button className="w-[30px] h-[30px] border border-[#DDDDDD] text-black text-sm flex items-center justify-center">
+                            <button
+                              type="button"
+                              onClick={() => updateQuantity(item.id, Math.max(1, (item.quantity || 1) - 1))}
+                              className="w-[30px] h-[30px] border border-[#DDDDDD] text-black text-sm flex items-center justify-center"
+                            >
                               −
                             </button>
                             <div className="w-[30px] h-[30px] border-t border-b border-[#DDDDDD] text-[13px] flex items-center justify-center">
                               {item.quantity}
                             </div>
-                            <button className="w-[30px] h-[30px] border border-[#DDDDDD] text-black text-sm flex items-center justify-center">
+                            <button
+                              type="button"
+                              onClick={() => updateQuantity(item.id, (item.quantity || 1) + 1)}
+                              className="w-[30px] h-[30px] border border-[#DDDDDD] text-black text-sm flex items-center justify-center"
+                            >
                               +
                             </button>
                           </div>
 
-                          <button className="text-[12px] text-[#888888] underline underline-offset-2">
+                          <button
+                            type="button"
+                            onClick={() => removeFromCart(item.id)}
+                            className="text-[12px] text-[#888888] underline underline-offset-2"
+                          >
                             Remove
                           </button>
                         </div>
@@ -91,7 +114,7 @@ export default function Cart() {
               <div className="mt-5 space-y-3">
                 <div className="flex items-center justify-between text-[13px] text-black">
                   <span>Subtotal</span>
-                  <span>$209.97</span>
+                  <span>${cartTotal.toFixed(2)}</span>
                 </div>
                 <div className="flex items-center justify-between text-[13px] text-black">
                   <span>Shipping</span>
@@ -99,18 +122,19 @@ export default function Cart() {
                 </div>
                 <div className="flex items-center justify-between text-[13px] text-black">
                   <span>Tax</span>
-                  <span>$16.80</span>
+                  <span>${tax.toFixed(2)}</span>
                 </div>
 
                 <div className="mt-4 h-px w-full bg-[#E5E5E5]" />
 
                 <div className="flex items-center justify-between text-[16px] font-bold text-black">
                   <span>TOTAL</span>
-                  <span>$226.77</span>
+                  <span>${total.toFixed(2)}</span>
                 </div>
               </div>
 
               <button
+                type="button"
                 onClick={() => navigate('/checkout')}
                 className="mt-6 h-[52px] w-full rounded-[4px] bg-[#111111] text-[13px] font-bold text-white hover:bg-black transition-colors"
               >

@@ -1,9 +1,40 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { auth } from '../firebase';
 
 export default function Signup() {
+  const navigate = useNavigate();
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const handleSignup = async (e) => {
+    e.preventDefault();
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(userCredential.user, { displayName: name });
+      navigate('/');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen w-full flex flex-col md:flex-row">
@@ -31,12 +62,14 @@ export default function Signup() {
             </p>
           </div>
 
-          <div className="flex flex-col gap-4 sm:gap-5">
+          <form className="flex flex-col gap-4 sm:gap-5" onSubmit={handleSignup}>
             <div>
               <label className="mb-2 sm:mb-3 block text-xs sm:text-sm font-medium text-black">Full Name</label>
               <input
                 type="text"
                 placeholder="John Doe"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 className="h-11 sm:h-12 w-full border border-black bg-transparent px-3 text-sm text-black outline-none placeholder:text-[#AAAAAA] focus:border-black"
               />
             </div>
@@ -46,6 +79,8 @@ export default function Signup() {
               <input
                 type="email"
                 placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="h-11 sm:h-12 w-full border border-black bg-transparent px-3 text-sm text-black outline-none placeholder:text-[#AAAAAA] focus:border-black"
               />
             </div>
@@ -56,6 +91,8 @@ export default function Signup() {
                 <input
                   type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••••••••••••••••••••••••••••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="h-11 sm:h-12 w-full border border-black bg-transparent px-3 pr-12 text-sm text-black outline-none placeholder:text-[#AAAAAA] focus:border-black"
                 />
                 <button
@@ -89,6 +126,8 @@ export default function Signup() {
                 <input
                   type={showConfirmPassword ? 'text' : 'password'}
                   placeholder="••••••••••••••••••••••••••••••••••••••••"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                   className="h-11 sm:h-12 w-full border border-black bg-transparent px-3 pr-12 text-sm text-black outline-none placeholder:text-[#AAAAAA] focus:border-black"
                 />
                 <button
@@ -115,14 +154,17 @@ export default function Signup() {
                 </button>
               </div>
             </div>
-          </div>
 
-          <button
-            type="button"
-            className="mt-8 sm:mt-12 h-12 sm:h-14 w-full rounded-full bg-black text-sm sm:text-base font-bold text-white hover:bg-gray-900 transition-colors"
-          >
-            SIGN UP
-          </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="mt-8 sm:mt-12 h-12 sm:h-14 w-full rounded-full bg-black text-sm sm:text-base font-bold text-white hover:bg-gray-900 transition-colors disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {loading ? 'Signing up...' : 'SIGN UP'}
+            </button>
+
+            {error ? <p className="text-sm text-red-600">{error}</p> : null}
+          </form>
 
           <p className="mt-4 text-center text-xs sm:text-sm text-[#404040]">
             Already have an account?{' '}
