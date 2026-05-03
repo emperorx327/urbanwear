@@ -158,7 +158,7 @@ export default function Home() {
         </div>
 
         {/* Right side - Content */}
-        <div className="flex-1 bg-[#111111] px-6 py-8 sm:px-8 sm:py-10 md:px-10 md:py-12 lg:px-20 lg:py-16 flex flex-col justify-center">
+        <div className="flex-1 bg-[#111111] px-6 pt-8 pb-0 sm:px-8 sm:pt-10 sm:pb-0 md:px-10 md:pt-12 md:pb-0 lg:px-20 lg:pt-16 lg:pb-0 flex flex-col justify-center">
           <p className="text-xs sm:text-sm font-bold text-[#888888] tracking-widest">OUR PHILOSOPHY</p>
 
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight w-full max-w-2xl mt-4 md:mt-6">DESIGNED FOR MOVEMENT. BUILT FOR IDENTITY.</h2>
