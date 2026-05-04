@@ -7,10 +7,20 @@ export default function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleLogout = async () => {
     await logout();
     navigate('/');
+  };
+
+  const handleSearch = (e) => {
+    if (e.key === 'Enter' && searchQuery.trim()) {
+      navigate(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
+      setIsSearchOpen(false);
+      setSearchQuery('');
+    }
   };
 
   return (
@@ -41,7 +51,15 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-4 md:gap-6">
-          <button className="text-white">
+          <button
+            type="button"
+            className="text-white"
+            aria-label="Open search"
+            onClick={() => {
+              setIsSearchOpen((current) => !current);
+              setIsMenuOpen(false);
+            }}
+          >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <path
                 strokeLinecap="round"
@@ -65,7 +83,7 @@ export default function Navbar() {
 
           {user ? (
             <div className="flex items-center gap-2 text-white">
-              <Link to="/" className="text-white" aria-label="Profile">
+              <Link to="/profile" className="text-white" aria-label="Profile">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                   <path
                     strokeLinecap="round"
@@ -104,6 +122,35 @@ export default function Navbar() {
             onClick={() => setIsMenuOpen((current) => !current)}
           >
             ☰
+          </button>
+        </div>
+      </div>
+
+      <div
+        className={`absolute left-0 top-full z-20 w-full overflow-hidden border-t border-white/10 bg-[#111111] transition-all duration-300 ease-out ${
+          isSearchOpen ? 'max-h-24 opacity-100' : 'pointer-events-none max-h-0 opacity-0'
+        }`}
+      >
+        <div className="flex items-center gap-3 px-5 py-4 md:px-[60px]">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={handleSearch}
+            placeholder="Search products..."
+            className="flex-1 border-b border-white/70 bg-transparent py-2 text-sm text-white outline-none placeholder:text-gray-400 sm:text-base md:text-lg"
+            autoFocus
+          />
+          <button
+            type="button"
+            onClick={() => {
+              setIsSearchOpen(false);
+              setSearchQuery('');
+            }}
+            className="flex h-10 w-10 items-center justify-center rounded-full text-xl text-white transition-colors hover:bg-white/10"
+            aria-label="Close search"
+          >
+            ✕
           </button>
         </div>
       </div>
