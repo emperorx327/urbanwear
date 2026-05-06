@@ -1,6 +1,19 @@
 import { Link } from 'react-router-dom';
+import { useProducts } from '../hooks/useProducts';
+import SkeletonCard from '../components/SkeletonCard';
 
 export default function Home() {
+  const { products, loading } = useProducts();
+
+  const mapCategoryToTag = (cat) => {
+    const key = cat.toLowerCase();
+    if (key.includes('hoodie')) return 'Hoodies';
+    if (key.includes('tee')) return 'Tees';
+    if (key.includes('sneaker')) return 'Sneakers';
+    if (key.includes('accessor')) return 'Accessories';
+    return 'All';
+  }
+
   return (
     <>
       <section className="relative w-full min-h-96 sm:min-h-[640px] md:h-[720px] bg-[#111111] overflow-hidden">
@@ -68,26 +81,26 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="mt-6 sm:mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+            <div className="mt-6 sm:mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
             {[
               'HOODIES',
               'OVERSIZED TEES',
               'SNEAKERS',
               'ACCESSORIES',
-            ].map((category) => (
-              <div
-                key={category}
-                className="w-full h-64 sm:h-80 md:h-96 rounded-lg bg-[#1A1A1A] overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
-              >
-                <div className="h-[72%] w-full bg-gradient-to-br from-[#2A2A2A] to-[#111111]" />
-                <div className="relative h-[28%] px-4 sm:px-6 md:px-8 pb-4 sm:pb-6 flex flex-col justify-end">
-                  <p className="text-base sm:text-lg md:text-xl font-bold text-white">{category}</p>
-                  <p className="mt-2 text-xs sm:text-sm font-bold text-white underline">
-                    SHOP NOW
-                  </p>
-                </div>
-              </div>
-            ))}
+            ].map((category) => {
+              const tag = mapCategoryToTag(category);
+              return (
+                <Link key={category} to={`/shop?category=${encodeURIComponent(tag)}`} className="w-full h-64 sm:h-80 md:h-96 rounded-lg bg-[#1A1A1A] overflow-hidden hover:shadow-lg transition-shadow">
+                  <div className="h-[72%] w-full bg-gradient-to-br from-[#2A2A2A] to-[#111111]" />
+                  <div className="relative h-[28%] px-4 sm:px-6 md:px-8 pb-4 sm:pb-6 flex flex-col justify-end">
+                    <p className="text-base sm:text-lg md:text-xl font-bold text-white">{category}</p>
+                    <p className="mt-2 text-xs sm:text-sm font-bold text-white underline">
+                      SHOP NOW
+                    </p>
+                  </div>
+                </Link>
+              )
+            })}
           </div>
         </div>
       </section>
@@ -112,34 +125,48 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-5">
-            {[
-              { name: 'Shadow Oversized Hoodie', price: '$79.99' },
-              { name: 'Essential Boxy Tee', price: '$39.99' },
-              { name: 'Urban Cargo Pants', price: '$89.99' },
-              { name: 'Street Runner V2', price: '$129.99' },
-              { name: 'Urban Classic Cap', price: '$29.99' },
-            ].map((item) => (
-              <div key={item.name} className="w-full h-56 sm:h-64 md:h-72 rounded-lg bg-[#555555] overflow-hidden flex flex-col justify-between p-3 sm:p-4 md:p-5 hover:shadow-lg transition-shadow cursor-pointer">
-                <div className="flex justify-end">
-                  <span className="text-[#888888] text-xl sm:text-2xl">♡</span>
-                </div>
-                <div>
-                  <p className="text-xs sm:text-sm font-bold text-black">
-                    {item.name}
-                  </p>
-                  <p className="text-xs sm:text-sm font-bold text-black mt-2">
-                    {item.price}
-                  </p>
-                  <div className="mt-3 flex gap-2">
-                    <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-[#000000]"></div>
-                    <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-[#D9D9D9]"></div>
-                    <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-[#888888] border border-[#555555]"></div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          {loading ? (
+            <div className="flex gap-6">
+              {Array(5).fill(0).map((_, i) => (
+                <SkeletonCard key={i} />
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-5">
+              {[
+                { name: 'Shadow Oversized Hoodie', price: '$79.99' },
+                { name: 'Essential Boxy Tee', price: '$39.99' },
+                { name: 'Urban Cargo Pants', price: '$89.99' },
+                { name: 'Street Runner V2', price: '$129.99' },
+                { name: 'Urban Classic Cap', price: '$29.99' },
+              ].map((item) => {
+                const product = products && products.find((p) => p.name === item.name);
+                const to = product ? `/product/${product.id}` : '/shop';
+                return (
+                  <Link key={item.name} to={to} className="no-underline text-inherit">
+                    <div className="w-full h-56 sm:h-64 md:h-72 rounded-lg bg-[#555555] overflow-hidden flex flex-col justify-between p-3 sm:p-4 md:p-5 hover:shadow-lg transition-shadow cursor-pointer">
+                      <div className="flex justify-end">
+                        <span className="text-[#888888] text-xl sm:text-2xl">♡</span>
+                      </div>
+                      <div>
+                        <p className="text-xs sm:text-sm font-bold text-black">
+                          {item.name}
+                        </p>
+                        <p className="text-xs sm:text-sm font-bold text-black mt-2">
+                          {item.price}
+                        </p>
+                        <div className="mt-3 flex gap-2">
+                          <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-[#000000]"></div>
+                          <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-[#D9D9D9]"></div>
+                          <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-[#888888] border border-[#555555]"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
+          )}
         </div>
       </section>
 

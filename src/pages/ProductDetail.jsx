@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useProducts } from '../hooks/useProducts';
+import SkeletonProductDetail from '../components/SkeletonProductDetail';
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -71,25 +72,7 @@ export default function ProductDetail() {
   }
 
   if (loading) {
-    return (
-      <div className="w-full bg-white px-5 sm:px-8 md:px-10 lg:px-20 pt-8 sm:pt-10 md:pt-12 lg:pt-16">
-        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8 md:gap-12 lg:gap-20 pb-12 sm:pb-16 md:pb-20">
-          <div className="w-full lg:w-auto flex-shrink-0 animate-pulse">
-            <div className="w-full lg:w-[600px] h-64 sm:h-96 md:h-[500px] lg:h-[700px] bg-[#E0E0E0] rounded-lg" />
-            <div className="flex gap-3 sm:gap-4 md:gap-8 lg:gap-[55px] mt-3 sm:mt-4">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-[120px] lg:h-[120px] bg-[#E0E0E0] rounded-lg" />
-              ))}
-            </div>
-          </div>
-          <div className="w-full flex flex-col animate-pulse">
-            <div className="h-8 bg-[#E0E0E0] rounded w-3/4 mb-4" />
-            <div className="h-8 bg-[#E0E0E0] rounded w-1/2 mb-4" />
-            <div className="h-4 bg-[#E0E0E0] rounded w-1/3 mb-8" />
-          </div>
-        </div>
-      </div>
-    );
+    return <SkeletonProductDetail />;
   }
 
   if (productsError || !product) {

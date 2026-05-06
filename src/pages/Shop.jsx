@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useProducts } from '../hooks/useProducts';
+import SkeletonCard from '../components/SkeletonCard';
 
 const TAGS = ['All', 'Hoodies', 'Tees', 'Pants', 'Sneakers', 'Accessories'];
 
@@ -8,6 +9,7 @@ export default function Shop() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const searchQuery = searchParams.get('search') || '';
+  const categoryParam = searchParams.get('category') || '';
   const [activeFilter, setActiveFilter] = useState('All');
   const [page, setPage] = useState(1);
   const itemsPerPage = 6;
@@ -30,6 +32,12 @@ export default function Shop() {
   useEffect(() => {
     setPage(1);
   }, [searchQuery, activeFilter]);
+
+  useEffect(() => {
+    if (categoryParam) {
+      setActiveFilter(categoryParam);
+    }
+  }, [categoryParam]);
 
   function handleTagClick(tag) {
     setActiveFilter(tag);
@@ -54,23 +62,14 @@ export default function Shop() {
         )}
 
         {loading ? (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 md:gap-6 lg:grid-cols-3 xl:grid-cols-4">
-            {Array.from({ length: 12 }).map((_, i) => (
-              <div key={i} className="flex justify-center">
-                <article className="w-full h-full bg-[#F5F5F5] rounded-2xl md:rounded-3xl relative p-3 sm:p-4 md:p-5 flex flex-col animate-pulse">
-                  <div className="w-full h-32 sm:h-40 md:h-48 lg:h-56 bg-[#E0E0E0] rounded-xl md:rounded-2xl flex-shrink-0" />
-                  <div className="flex-1 flex flex-col mt-2 sm:mt-3 md:mt-4">
-                    <div className="h-4 bg-[#E0E0E0] rounded w-3/4" />
-                    <div className="h-4 bg-[#E0E0E0] rounded w-1/2 mt-2" />
-                    <div className="flex items-center gap-1.5 mt-4 pt-3 border-t border-gray-200">
-                      <span className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-[#E0E0E0]" />
-                      <span className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-[#E0E0E0]" />
-                      <span className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-[#E0E0E0]" />
-                    </div>
-                  </div>
-                </article>
-              </div>
-            ))}
+          <div className="px-20 py-16">
+            <div className="h-10 bg-gray-200 rounded w-64 mb-4 animate-pulse"></div>
+            <div className="h-4 bg-gray-200 rounded w-40 mb-8 animate-pulse"></div>
+            <div className="grid grid-cols-4 gap-6">
+              {Array(12).fill(0).map((_, i) => (
+                <SkeletonCard key={i} />
+              ))}
+            </div>
           </div>
         ) : (
           <>
