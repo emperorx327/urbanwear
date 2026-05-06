@@ -2,35 +2,27 @@ import { useParams, Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { useProducts } from '../hooks/useProducts';
 
 export default function ProductDetail() {
   const { id } = useParams();
   const { addToCart } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { products, loading, error: productsError } = useProducts();
   const [selectedSize, setSelectedSize] = useState('');
   const [quantity, setQuantity] = useState(1);
-  const [selectedColor, setSelectedColor] = useState('Black');
+  const [selectedColor, setSelectedColor] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
-  const product = {
-    name: 'Shadow Oversized Hoodie',
-    price: '$79.99',
-    rating: 4.2,
-    reviews: 128,
-    image: '',
-    colors: [
-      { name: 'Black', value: '#111111' },
-      { name: 'Gray', value: '#555555' },
-      { name: 'White', value: '#EEEEEE' },
-    ],
-  };
+  const product = products.find(p => p.id === id);
 
-  const sizes = ['XS', 'S', 'M', 'L', 'XL'];
-
-  const incrementQuantity = () => setQuantity((q) => q + 1);
-  const decrementQuantity = () => setQuantity((q) => Math.max(1, q - 1));
+  useEffect(() => {
+    if (product && !selectedColor && product.colors && product.colors.length > 0) {
+      setSelectedColor(product.colors[0]);
+    }
+  }, [product, selectedColor]);
 
   useEffect(() => {
     if (!success) {
@@ -69,6 +61,50 @@ export default function ProductDetail() {
 
     setSuccess(true);
   };
+
+  const decrementQuantity = () => {
+    if (quantity > 1) setQuantity(quantity - 1)
+  }
+
+  const incrementQuantity = () => {
+    setQuantity(quantity + 1)
+  }
+
+  if (loading) {
+    return (
+      <div className="w-full bg-white px-5 sm:px-8 md:px-10 lg:px-20 pt-8 sm:pt-10 md:pt-12 lg:pt-16">
+        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8 md:gap-12 lg:gap-20 pb-12 sm:pb-16 md:pb-20">
+          <div className="w-full lg:w-auto flex-shrink-0 animate-pulse">
+            <div className="w-full lg:w-[600px] h-64 sm:h-96 md:h-[500px] lg:h-[700px] bg-[#E0E0E0] rounded-lg" />
+            <div className="flex gap-3 sm:gap-4 md:gap-8 lg:gap-[55px] mt-3 sm:mt-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-[120px] lg:h-[120px] bg-[#E0E0E0] rounded-lg" />
+              ))}
+            </div>
+          </div>
+          <div className="w-full flex flex-col animate-pulse">
+            <div className="h-8 bg-[#E0E0E0] rounded w-3/4 mb-4" />
+            <div className="h-8 bg-[#E0E0E0] rounded w-1/2 mb-4" />
+            <div className="h-4 bg-[#E0E0E0] rounded w-1/3 mb-8" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (productsError || !product) {
+    return (
+      <div className="w-full bg-white px-5 sm:px-8 md:px-10 lg:px-20 pt-8 sm:pt-10 md:pt-12 lg:pt-16">
+        <div className="max-w-7xl mx-auto">
+          <div className="p-6 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+            <h2 className="font-bold text-lg mb-2">Product Not Found</h2>
+            <p>{productsError || 'The product you are looking for does not exist.'}</p>
+            <RouterLink to="/shop" className="text-red-700 underline mt-4 block">Back to Shop</RouterLink>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full bg-white px-5 sm:px-8 md:px-10 lg:px-20 pt-8 sm:pt-10 md:pt-12 lg:pt-16">
@@ -109,7 +145,7 @@ export default function ProductDetail() {
 
           {/* Price */}
           <p className="text-xl sm:text-2xl md:text-3xl lg:text-2xl font-bold text-black mb-2 md:mb-3 lg:mb-2">
-            {product.price}
+            ${typeof product.price === 'number' ? product.price.toFixed(2) : product.price}
           </p>
 
           {/* Star Rating */}
@@ -128,19 +164,19 @@ export default function ProductDetail() {
           {/* Color Selector */}
           <div className="mb-5 sm:mb-6 md:mb-8 lg:mb-6">
             <label className="text-xs sm:text-sm lg:text-[13px] font-medium text-black block mb-2 md:mb-3 lg:mb-2">
-              Color: {selectedColor}
+              Color
             </label>
             <div className="flex gap-2 md:gap-3 lg:gap-3">
-              {product.colors.map((color) => (
+              {product.colors && product.colors.map((colorValue, index) => (
                 <button
-                  key={color.name}
+                  key={index}
                   type="button"
-                  onClick={() => setSelectedColor(color.name)}
+                  onClick={() => setSelectedColor(colorValue)}
                   className={`w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-7 lg:h-7 rounded-full border-2 transition ${
-                    selectedColor === color.name ? 'border-black' : 'border-gray-300'
+                    selectedColor === colorValue ? 'border-black' : 'border-gray-300'
                   }`}
-                  style={{ backgroundColor: color.value }}
-                  aria-label={`Color ${color.name}`}
+                  style={{ backgroundColor: colorValue }}
+                  aria-label={`Color ${colorValue}`}
                 ></button>
               ))}
             </div>
@@ -152,7 +188,7 @@ export default function ProductDetail() {
               Size:
             </label>
             <div className="flex gap-1.5 md:gap-2 lg:gap-2 flex-wrap">
-              {sizes.map((size) => (
+              {product.sizes && product.sizes.map((size) => (
                 <button
                   key={size}
                   type="button"
@@ -214,7 +250,7 @@ export default function ProductDetail() {
 
           {/* Description Text */}
           <p className="text-xs sm:text-sm lg:text-[13px] text-[#666666] max-w-sm mt-3 sm:mt-4 md:mt-6 lg:mt-4 leading-relaxed">
-            This oversized hoodie combines comfort and style. Made from premium cotton blend fabric. Perfect for casual wear or layering.
+            {product.description || 'Premium quality product designed for style and comfort.'}
           </p>
 
           {/* Shipping Info */}

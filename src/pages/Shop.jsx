@@ -1,20 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-
-const products = [
-  { id: 'p1', name: 'Shadow Oversized Hoodie', price: '$79.99', category: 'Hoodies' },
-  { id: 'p2', name: 'Essential Boxy Tee', price: '$39.99', category: 'Tees' },
-  { id: 'p3', name: 'Urban Cargo Pants', price: '$89.99', category: 'Pants' },
-  { id: 'p4', name: 'Street Runner V2', price: '$129.99', category: 'Sneakers' },
-  { id: 'p5', name: 'Urban Classic Cap', price: '$29.99', category: 'Accessories' },
-  { id: 'p6', name: 'Street Bomber Jacket', price: '$149.99', category: 'Hoodies' },
-  { id: 'p7', name: 'Cargo Wide Pants', price: '$94.99', category: 'Pants' },
-  { id: 'p8', name: 'Essential White Tee', price: '$34.99', category: 'Tees' },
-  { id: 'p9', name: 'Urban Bucket Hat', price: '$24.99', category: 'Accessories' },
-  { id: 'p10', name: 'Oversized Flannel', price: '$69.99', category: 'Hoodies' },
-  { id: 'p11', name: 'Track Pants', price: '$54.99', category: 'Pants' },
-  { id: 'p12', name: 'Leather Crossbody', price: '$89.99', category: 'Accessories' },
-];
+import { useProducts } from '../hooks/useProducts';
 
 const TAGS = ['All', 'Hoodies', 'Tees', 'Pants', 'Sneakers', 'Accessories'];
 
@@ -25,6 +11,7 @@ export default function Shop() {
   const [activeFilter, setActiveFilter] = useState('All');
   const [page, setPage] = useState(1);
   const itemsPerPage = 6;
+  const { products, loading, error } = useProducts();
 
   const filtered = products.filter((product) => {
     if (searchQuery) {
@@ -60,6 +47,33 @@ export default function Shop() {
   return (
     <div className="bg-white px-4 sm:px-6 md:px-10 lg:px-16 xl:px-20 py-4">
       <main className="w-full max-w-7xl mx-auto">
+        {error && (
+          <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+            Error loading products: {error}
+          </div>
+        )}
+
+        {loading ? (
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 md:gap-6 lg:grid-cols-3 xl:grid-cols-4">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <div key={i} className="flex justify-center">
+                <article className="w-full h-full bg-[#F5F5F5] rounded-2xl md:rounded-3xl relative p-3 sm:p-4 md:p-5 flex flex-col animate-pulse">
+                  <div className="w-full h-32 sm:h-40 md:h-48 lg:h-56 bg-[#E0E0E0] rounded-xl md:rounded-2xl flex-shrink-0" />
+                  <div className="flex-1 flex flex-col mt-2 sm:mt-3 md:mt-4">
+                    <div className="h-4 bg-[#E0E0E0] rounded w-3/4" />
+                    <div className="h-4 bg-[#E0E0E0] rounded w-1/2 mt-2" />
+                    <div className="flex items-center gap-1.5 mt-4 pt-3 border-t border-gray-200">
+                      <span className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-[#E0E0E0]" />
+                      <span className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-[#E0E0E0]" />
+                      <span className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-[#E0E0E0]" />
+                    </div>
+                  </div>
+                </article>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <>
         <header className="mt-8 sm:mt-12 md:mt-16 lg:mt-20">
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-black break-words">{title}</h1>
           <p className="text-xs sm:text-sm text-[#888888] mt-2 md:mt-3">
@@ -134,7 +148,7 @@ export default function Shop() {
 
                       <div className="flex-1 flex flex-col mt-2 sm:mt-3 md:mt-4">
                         <h3 className="text-xs sm:text-sm font-medium text-black line-clamp-2">{product.name}</h3>
-                        <p className="text-xs sm:text-sm font-bold text-black mt-1 md:mt-2">{product.price}</p>
+                        <p className="text-xs sm:text-sm font-bold text-black mt-1 md:mt-2">${typeof product.price === 'number' ? product.price.toFixed(2) : product.price}</p>
 
                         <div className="flex items-center gap-1.5 mt-2 md:mt-3 pt-2 md:pt-3 border-t border-gray-200">
                           <span className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-black" />
@@ -174,6 +188,8 @@ export default function Shop() {
             →
           </button>
         </div>
+          </>
+        )}
       </main>
     </div>
   );
