@@ -1,18 +1,19 @@
 import { initializeApp } from 'firebase/app'
-import { getAuth } from 'firebase/auth'
+import { getAuth, GoogleAuthProvider } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBJTaV_dMkf8prbLet_Lwd49kpYql1nsHc",
-  authDomain: "urbanwear-1baa2.firebaseapp.com",
-  projectId: "urbanwear-1baa2",
-  storageBucket: "urbanwear-1baa2.firebasestorage.app",
-  messagingSenderId: "856631725059",
-  appId: "1:856631725059:web:516c7282e6d01f4400d236"
+  apiKey: import.meta.env.VITE_API_KEY,
+  authDomain: import.meta.env.VITE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_APP_ID,
 }
 
 const app = initializeApp(firebaseConfig)
 export const auth = getAuth(app)
 export const db = getFirestore(app)
+export const googleProvider = new GoogleAuthProvider()
 
 export default app

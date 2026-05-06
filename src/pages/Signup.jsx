@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { auth } from '../firebase';
+import { createUserWithEmailAndPassword, updateProfile, signInWithPopup } from 'firebase/auth';
+import { auth, googleProvider } from '../firebase';
 import { useToast } from '../context/ToastContext';
 
 export default function Signup() {
@@ -15,6 +15,16 @@ export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { showToast } = useToast();
+
+  const handleGoogleSignup = async () => {
+    try {
+      await signInWithPopup(auth, googleProvider)
+      showToast('Account created with Google successfully!', 'success')
+      navigate('/')
+    } catch (err) {
+      showToast(err.message, 'error')
+    }
+  }
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -166,6 +176,23 @@ export default function Signup() {
             >
               {loading ? 'Signing up...' : 'SIGN UP'}
             </button>
+
+            <div className="flex items-center gap-4 w-[340px] my-4">
+              <div className="flex-1 h-px bg-gray-300"></div>
+              <span className="text-gray-400 text-sm">OR</span>
+              <div className="flex-1 h-px bg-gray-300"></div>
+            </div>
+
+            <div className="flex justify-center">
+              <button
+                type="button"
+                onClick={handleGoogleSignup}
+                className="w-[340px] h-[50px] border border-gray-300 rounded-full flex items-center justify-center gap-3 hover:bg-gray-50 transition"
+              >
+                <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />
+                <span className="text-sm font-medium text-gray-700">Continue with Google</span>
+              </button>
+            </div>
 
             {error ? <p className="text-sm text-red-600">{error}</p> : null}
           </form>
