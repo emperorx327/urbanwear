@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
+import { useToast } from '../context/ToastContext';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ export default function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const { showToast } = useToast();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -18,9 +20,11 @@ export default function Login() {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      showToast('Welcome back! Logged in successfully', 'success')
       navigate('/');
     } catch (err) {
       setError('Invalid email or password');
+      showToast('Invalid email or password', 'error')
     } finally {
       setLoading(false);
     }

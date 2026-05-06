@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -10,8 +11,11 @@ export default function Navbar() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
+  const { showToast } = useToast();
+
   const handleLogout = async () => {
     await logout();
+    showToast('Logged out successfully', 'success')
     navigate('/');
   };
 

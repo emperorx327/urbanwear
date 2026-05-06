@@ -4,6 +4,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useProducts } from '../hooks/useProducts';
 import SkeletonProductDetail from '../components/SkeletonProductDetail';
+import { useToast } from '../context/ToastContext';
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -16,6 +17,7 @@ export default function ProductDetail() {
   const [selectedColor, setSelectedColor] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const { showToast } = useToast();
 
   const product = products.find(p => p.id === id);
 
@@ -45,6 +47,7 @@ export default function ProductDetail() {
 
     if (!selectedSize) {
       setError('Please select a size');
+      showToast('Please select a size', 'warning')
       return;
     }
 
@@ -59,8 +62,8 @@ export default function ProductDetail() {
       image: product.image,
       productId: id,
     });
-
     setSuccess(true);
+    showToast('Added to cart successfully!', 'success')
   };
 
   const decrementQuantity = () => {

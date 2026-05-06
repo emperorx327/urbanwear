@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth } from '../firebase';
+import { useToast } from '../context/ToastContext';
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ export default function Signup() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const { showToast } = useToast();
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -28,9 +30,11 @@ export default function Signup() {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(userCredential.user, { displayName: name });
+      showToast('Account created successfully! Welcome to UrbanWear', 'success')
       navigate('/');
     } catch (err) {
       setError(err.message);
+      showToast(err.message, 'error')
     } finally {
       setLoading(false);
     }

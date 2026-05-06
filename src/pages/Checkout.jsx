@@ -3,12 +3,14 @@ import { useState } from 'react';
 import { db } from '../firebase';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { useToast } from '../context/ToastContext';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 
 export default function Checkout() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { cartItems, cartTotal, clearCart } = useCart();
+  const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   const [formData, setFormData] = useState({
@@ -91,9 +93,11 @@ export default function Checkout() {
 
       await addDoc(ordersRef, orderPayload);
       await clearCart();
+      showToast('Order placed successfully!', 'success')
       navigate('/order-confirmation', { state: { order: orderPayload } });
     } catch (err) {
       console.error(err);
+      showToast('Failed to place order', 'error')
     } finally {
       setLoading(false);
     }

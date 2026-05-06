@@ -1,11 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 export default function Cart() {
   const { cartItems, removeFromCart, updateQuantity, cartTotal, cartCount } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const tax = cartTotal * 0.08;
   const total = cartTotal + tax;
 
@@ -72,7 +74,7 @@ export default function Cart() {
                           <div className="flex items-center">
                             <button
                               type="button"
-                              onClick={() => updateQuantity(item.id, Math.max(1, (item.quantity || 1) - 1))}
+                              onClick={() => { updateQuantity(item.id, Math.max(1, (item.quantity || 1) - 1)); showToast('Quantity updated', 'info') }}
                               className="w-[30px] h-[30px] border border-[#DDDDDD] text-black text-sm flex items-center justify-center"
                             >
                               −
@@ -82,7 +84,7 @@ export default function Cart() {
                             </div>
                             <button
                               type="button"
-                              onClick={() => updateQuantity(item.id, (item.quantity || 1) + 1)}
+                              onClick={() => { updateQuantity(item.id, (item.quantity || 1) + 1); showToast('Quantity updated', 'info') }}
                               className="w-[30px] h-[30px] border border-[#DDDDDD] text-black text-sm flex items-center justify-center"
                             >
                               +
@@ -91,7 +93,7 @@ export default function Cart() {
 
                           <button
                             type="button"
-                            onClick={() => removeFromCart(item.id)}
+                            onClick={() => { removeFromCart(item.id); showToast('Item removed from cart', 'info') }}
                             className="text-[12px] text-[#888888] underline underline-offset-2"
                           >
                             Remove
