@@ -1,10 +1,12 @@
 import { useParams, Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useProducts } from '../hooks/useProducts';
 import SkeletonProductDetail from '../components/SkeletonProductDetail';
 import { useToast } from '../context/ToastContext';
+import PageTransition from '../components/PageTransition';
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -75,24 +77,31 @@ export default function ProductDetail() {
   }
 
   if (loading) {
-    return <SkeletonProductDetail />;
+    return (
+      <PageTransition>
+        <SkeletonProductDetail />
+      </PageTransition>
+    );
   }
 
   if (productsError || !product) {
     return (
-      <div className="w-full bg-white px-5 sm:px-8 md:px-10 lg:px-20 pt-8 sm:pt-10 md:pt-12 lg:pt-16">
-        <div className="max-w-7xl mx-auto">
-          <div className="p-6 bg-red-100 border border-red-400 text-red-700 rounded-lg">
-            <h2 className="font-bold text-lg mb-2">Product Not Found</h2>
-            <p>{productsError || 'The product you are looking for does not exist.'}</p>
-            <RouterLink to="/shop" className="text-red-700 underline mt-4 block">Back to Shop</RouterLink>
+      <PageTransition>
+        <div className="w-full bg-white px-5 sm:px-8 md:px-10 lg:px-20 pt-8 sm:pt-10 md:pt-12 lg:pt-16">
+          <div className="max-w-7xl mx-auto">
+            <div className="p-6 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+              <h2 className="font-bold text-lg mb-2">Product Not Found</h2>
+              <p>{productsError || 'The product you are looking for does not exist.'}</p>
+              <RouterLink to="/shop" className="text-red-700 underline mt-4 block">Back to Shop</RouterLink>
+            </div>
           </div>
         </div>
-      </div>
+      </PageTransition>
     );
   }
 
   return (
+    <PageTransition>
     <div className="w-full bg-white px-5 sm:px-8 md:px-10 lg:px-20 pt-8 sm:pt-10 md:pt-12 lg:pt-16">
       {/* Main Container */}
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8 md:gap-12 lg:gap-20 pb-12 sm:pb-16 md:pb-20">
@@ -218,21 +227,24 @@ export default function ProductDetail() {
           </div>
 
           {/* ADD TO CART Button */}
-          <button
+          <motion.button
             type="button"
             onClick={handleAddToCart}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            transition={{ duration: 0.2 }}
             className="w-full md:w-96 h-12 sm:h-14 md:h-16 lg:h-14 bg-[#111111] text-white text-sm sm:text-base lg:text-[15px] font-bold rounded hover:bg-gray-900 transition mt-5 sm:mt-6 md:mt-8 lg:mt-6"
           >
             ADD TO CART
-          </button>
+          </motion.button>
 
           {error ? <p className="mt-3 text-sm text-red-600">{error}</p> : null}
           {success ? <p className="mt-3 text-sm text-green-600">Added to cart!</p> : null}
 
           {/* ADD TO WISHLIST Button */}
-          <button className="w-full md:w-96 h-12 sm:h-14 md:h-16 lg:h-14 border border-[#111111] text-[#111111] text-sm sm:text-base lg:text-[15px] font-bold rounded hover:bg-gray-100 transition mt-2 sm:mt-3 md:mt-4 lg:mt-3">
+          <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} transition={{ duration: 0.2 }} className="w-full md:w-96 h-12 sm:h-14 md:h-16 lg:h-14 border border-[#111111] text-[#111111] text-sm sm:text-base lg:text-[15px] font-bold rounded hover:bg-gray-100 transition mt-2 sm:mt-3 md:mt-4 lg:mt-3">
             ADD TO WISHLIST
-          </button>
+          </motion.button>
 
           {/* Description Text */}
           <p className="text-xs sm:text-sm lg:text-[13px] text-[#666666] max-w-sm mt-3 sm:mt-4 md:mt-6 lg:mt-4 leading-relaxed">
@@ -253,5 +265,6 @@ export default function ProductDetail() {
         </div>
       </div>
     </div>
+    </PageTransition>
   );
 }

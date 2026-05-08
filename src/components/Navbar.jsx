@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 
@@ -10,8 +10,20 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [scrolled, setScrolled] = useState(false);
 
   const { showToast } = useToast();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleLogout = async () => {
     await logout();
@@ -28,7 +40,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="relative w-full bg-[#111111] px-5 md:px-[60px]">
+    <nav className={`fixed left-0 top-0 z-50 w-full px-5 md:px-[60px] transition-all duration-300 ${scrolled ? 'bg-[#111111] shadow-lg backdrop-blur-sm' : 'bg-[#111111]/90'}`}>
       <div className="flex h-20 items-center justify-between">
         <Link to="/" className="shrink-0">
           <h1

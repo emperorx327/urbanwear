@@ -1,8 +1,10 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { createUserWithEmailAndPassword, updateProfile, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../firebase';
 import { useToast } from '../context/ToastContext';
+import PageTransition from '../components/PageTransition';
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -51,6 +53,7 @@ export default function Signup() {
   };
 
   return (
+    <PageTransition>
     <div className="min-h-screen w-full flex flex-col md:flex-row">
       <div className="relative w-full h-48 sm:h-64 md:h-auto md:w-1/2 lg:w-[600px] md:min-h-screen flex-shrink-0 overflow-hidden bg-gradient-to-b from-black to-[#1a0000]">
         <img
@@ -169,13 +172,15 @@ export default function Signup() {
               </div>
             </div>
 
-            <button
+            <motion.button
               type="submit"
               disabled={loading}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
               className="mt-8 sm:mt-12 h-12 sm:h-14 w-full rounded-full bg-black text-sm sm:text-base font-bold text-white hover:bg-gray-900 transition-colors disabled:cursor-not-allowed disabled:opacity-70"
             >
               {loading ? 'Signing up...' : 'SIGN UP'}
-            </button>
+            </motion.button>
 
             <div className="flex items-center gap-4 w-[340px] my-4">
               <div className="flex-1 h-px bg-gray-300"></div>
@@ -184,14 +189,16 @@ export default function Signup() {
             </div>
 
             <div className="flex justify-center">
-              <button
+              <motion.button
                 type="button"
                 onClick={handleGoogleSignup}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
                 className="w-[340px] h-[50px] border border-gray-300 rounded-full flex items-center justify-center gap-3 hover:bg-gray-50 transition"
               >
                 <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />
                 <span className="text-sm font-medium text-gray-700">Continue with Google</span>
-              </button>
+              </motion.button>
             </div>
 
             {error ? <p className="text-sm text-red-600">{error}</p> : null}
@@ -206,5 +213,6 @@ export default function Signup() {
         </div>
       </div>
     </div>
+    </PageTransition>
   );
 }

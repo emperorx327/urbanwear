@@ -1,10 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { db } from '../firebase';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import PageTransition from '../components/PageTransition';
 
 export default function Checkout() {
   const navigate = useNavigate();
@@ -108,6 +110,7 @@ export default function Checkout() {
   const total = subtotal + tax;
 
   return (
+    <PageTransition>
     <div className="w-full bg-white px-5 sm:px-8 md:px-10 lg:px-20 pt-8 sm:pt-10 md:pt-12 lg:pt-16">
       <div className="mx-auto max-w-7xl">
         <div className="grid grid-cols-1 lg:grid-cols-[60%_40%] gap-8 lg:gap-12 xl:gap-16 pb-12 md:pb-16 lg:pb-20">
@@ -251,14 +254,16 @@ export default function Checkout() {
             </div>
 
             {/* Place Order Button */}
-            <button
+            <motion.button
               type="button"
               onClick={handlePlaceOrder}
               disabled={loading || !user || cartItems.length === 0}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
               className="w-full h-12 sm:h-14 md:h-16 lg:h-14 rounded-[4px] bg-[#111111] text-xs sm:text-sm lg:text-[15px] font-bold text-white hover:bg-gray-900 transition-colors mt-8 md:mt-10 lg:mt-8 disabled:cursor-not-allowed disabled:opacity-70"
             >
               {loading ? 'PLACING ORDER...' : 'PLACE ORDER'}
-            </button>
+            </motion.button>
           </section>
 
           {/* Right Side - Order Summary */}
@@ -314,5 +319,6 @@ export default function Checkout() {
         </div>
       </div>
     </div>
+    </PageTransition>
   );
 }

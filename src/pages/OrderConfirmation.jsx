@@ -1,4 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import PageTransition from '../components/PageTransition';
 
 export default function OrderConfirmation() {
   const navigate = useNavigate();
@@ -7,6 +9,7 @@ export default function OrderConfirmation() {
   const items = order?.items || [];
 
   return (
+    <PageTransition>
     <div className="min-h-screen bg-white px-4 sm:px-6 md:px-10 lg:px-20 py-10 sm:py-12 md:py-16">
       <div className="mx-auto flex w-full max-w-4xl flex-col items-center rounded-[24px] bg-[#F7F7F7] px-5 py-10 sm:px-8 sm:py-12 md:px-12 md:py-16 text-center">
         <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-black/5 text-4xl sm:h-24 sm:w-24 sm:text-5xl">
@@ -60,22 +63,27 @@ export default function OrderConfirmation() {
         </div>
 
         <div className="mt-8 flex w-full flex-col gap-3 sm:flex-row sm:justify-center">
-          <button
+          <motion.button
             type="button"
             onClick={() => navigate('/shop')}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             className="h-12 rounded-full bg-black px-6 text-sm font-bold text-white transition-colors hover:bg-gray-900 sm:w-auto"
           >
             Continue Shopping
-          </button>
-          <button
+          </motion.button>
+          <motion.button
             type="button"
             onClick={() => navigate('/profile')}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             className="h-12 rounded-full border border-black bg-white px-6 text-sm font-bold text-black transition-colors hover:bg-black hover:text-white sm:w-auto"
           >
             View Orders
-          </button>
+          </motion.button>
         </div>
       </div>
     </div>
+    </PageTransition>
   );
 }

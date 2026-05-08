@@ -1,7 +1,9 @@
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import PageTransition from '../components/PageTransition';
 
 export default function Cart() {
   const { cartItems, removeFromCart, updateQuantity, cartTotal, cartCount } = useCart();
@@ -13,35 +15,44 @@ export default function Cart() {
 
   if (!user) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center px-4 text-center">
-        <h2 className="text-2xl font-bold text-black">Please login to view your cart</h2>
-        <button
-          type="button"
-          onClick={() => navigate('/login')}
-          className="mt-4 h-12 rounded-full bg-black px-6 text-sm font-bold text-white hover:bg-gray-900 transition-colors"
-        >
-          Login
-        </button>
-      </div>
+      <PageTransition>
+        <div className="flex min-h-screen flex-col items-center justify-center px-4 text-center">
+          <h2 className="text-2xl font-bold text-black">Please login to view your cart</h2>
+          <motion.button
+            type="button"
+            onClick={() => navigate('/login')}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="mt-4 h-12 rounded-full bg-black px-6 text-sm font-bold text-white hover:bg-gray-900 transition-colors"
+          >
+            Login
+          </motion.button>
+        </div>
+      </PageTransition>
     );
   }
 
   if (cartItems.length === 0) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center px-4 text-center">
-        <h2 className="text-2xl font-bold text-black">Your cart is empty</h2>
-        <button
-          type="button"
-          onClick={() => navigate('/shop')}
-          className="mt-4 h-12 rounded-full bg-black px-6 text-sm font-bold text-white hover:bg-gray-900 transition-colors"
-        >
-          Shop Now
-        </button>
-      </div>
+      <PageTransition>
+        <div className="flex min-h-screen flex-col items-center justify-center px-4 text-center">
+          <h2 className="text-2xl font-bold text-black">Your cart is empty</h2>
+          <motion.button
+            type="button"
+            onClick={() => navigate('/shop')}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="mt-4 h-12 rounded-full bg-black px-6 text-sm font-bold text-white hover:bg-gray-900 transition-colors"
+          >
+            Shop Now
+          </motion.button>
+        </div>
+      </PageTransition>
     );
   }
 
   return (
+    <PageTransition>
     <div className="w-full min-h-screen bg-white px-4 sm:px-6 md:px-8 lg:px-20 py-8 sm:py-10 md:py-12">
       <div className="mx-auto max-w-7xl">
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-10">
@@ -135,13 +146,15 @@ export default function Cart() {
                 </div>
               </div>
 
-              <button
+              <motion.button
                 type="button"
                 onClick={() => navigate('/checkout')}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
                 className="mt-6 h-[52px] w-full rounded-[4px] bg-[#111111] text-[13px] font-bold text-white hover:bg-black transition-colors"
               >
                 PROCEED TO CHECKOUT
-              </button>
+              </motion.button>
 
               <div className="mt-4 flex flex-col sm:flex-row gap-3">
                 <input
@@ -158,5 +171,6 @@ export default function Cart() {
         </div>
       </div>
     </div>
+    </PageTransition>
   );
 }

@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useProducts } from '../hooks/useProducts';
 import SkeletonCard from '../components/SkeletonCard';
+import PageTransition from '../components/PageTransition';
 
 const TAGS = ['All', 'Hoodies', 'Tees', 'Pants', 'Sneakers', 'Accessories'];
 
@@ -53,6 +55,7 @@ export default function Shop() {
   }
 
   return (
+    <PageTransition>
     <div className="bg-white px-4 sm:px-6 md:px-10 lg:px-16 xl:px-20 py-4">
       <main className="w-full max-w-7xl mx-auto">
         {error && (
@@ -131,7 +134,7 @@ export default function Shop() {
               {paginated.map((product) => (
                 <div key={product.id} className="flex justify-center">
                   <Link to={`/product/${product.id}`} className="no-underline text-inherit w-full">
-                    <article className="w-full h-full bg-[#F5F5F5] rounded-2xl md:rounded-3xl relative p-3 sm:p-4 md:p-5 flex flex-col">
+                    <motion.article whileHover={{ scale: 1.03, y: -5 }} transition={{ duration: 0.2 }} className="w-full h-full bg-[#F5F5F5] rounded-2xl md:rounded-3xl relative p-3 sm:p-4 md:p-5 flex flex-col">
                       <button 
                         className="absolute top-2 sm:top-3 md:top-4 right-2 sm:right-3 md:right-4 p-1.5 hover:bg-white rounded-full transition-colors" 
                         aria-label="Favorite"
@@ -155,7 +158,7 @@ export default function Shop() {
                           <span className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-white border border-gray-300" />
                         </div>
                       </div>
-                    </article>
+                    </motion.article>
                   </Link>
                 </div>
               ))}
@@ -191,5 +194,6 @@ export default function Shop() {
         )}
       </main>
     </div>
+    </PageTransition>
   );
 }
