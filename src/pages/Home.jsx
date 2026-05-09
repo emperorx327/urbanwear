@@ -10,9 +10,7 @@ const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
+    transition: { staggerChildren: 0.1 },
   },
 };
 
@@ -31,10 +29,11 @@ export default function Home() {
     if (key.includes('sneaker')) return 'Sneakers';
     if (key.includes('accessor')) return 'Accessories';
     return 'All';
-  }
+  };
 
   return (
     <PageTransition>
+      {/* Hero Section */}
       <motion.section
         className="relative w-full min-h-96 sm:min-h-[640px] md:h-[720px] bg-[#111111] overflow-hidden"
         initial={{ opacity: 0, y: 24 }}
@@ -49,6 +48,7 @@ export default function Home() {
             backgroundPosition: 'center',
           }}
         />
+
         <div className="absolute inset-0 bg-[rgba(0,0,0,0.2)]" />
 
         <motion.p
@@ -93,6 +93,7 @@ export default function Home() {
           >
             SHOP NOW →
           </MotionLink>
+
           <MotionLink
             to="/shop"
             whileHover={{ scale: 1.05 }}
@@ -103,68 +104,65 @@ export default function Home() {
             NEW DROP
           </MotionLink>
         </motion.div>
+
+        {/* optional slide indicators could go here */}
       </motion.section>
 
-      <motion.section
-        className="relative w-full bg-[#FFFFFF] overflow-hidden"
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-      >
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8 lg:px-10 py-8 sm:py-10 md:py-12 xl:py-16">
-          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-            <div className="flex flex-col gap-2">
-              <p className="text-xs sm:text-sm font-bold text-black">
-                SHOP BY CATEGORY
-              </p>
-              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-black">
-                EXPLORE OUR COLLECTIONS
-              </h2>
-            </div>
+      {/* Explore Our Collections Section */}
+      <section className="w-full bg-white py-12 px-6">
+        <div className="mx-auto max-w-7xl">
+          <p className="text-sm font-bold text-black mb-2">SHOP BY CATEGORY</p>
 
-            <MotionLink
-              to="/shop"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="text-xs sm:text-sm font-bold text-black whitespace-nowrap hover:underline"
-            >
-              VIEW ALL →
-            </MotionLink>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-4xl font-bold text-black">EXPLORE OUR COLLECTIONS</h2>
+            <Link to="/shop" className="text-sm font-bold text-black whitespace-nowrap">VIEW ALL →</Link>
           </div>
 
-          <motion.div
-            className="mt-6 sm:mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6"
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-          >
-            {[
-              'HOODIES',
-              'OVERSIZED TEES',
-              'SNEAKERS',
-              'ACCESSORIES',
-            ].map((category) => {
-              const tag = mapCategoryToTag(category);
-              return (
-                <motion.div key={category} variants={itemVariants} whileHover={{ y: -5, scale: 1.02 }} transition={{ duration: 0.2 }}>
-                  <Link to={`/shop?category=${encodeURIComponent(tag)}`} className="block w-full h-64 sm:h-80 md:h-96 rounded-lg bg-[#1A1A1A] overflow-hidden hover:shadow-lg transition-shadow">
-                    <div className="h-[72%] w-full bg-gradient-to-br from-[#2A2A2A] to-[#111111]" />
-                    <div className="relative h-[28%] px-4 sm:px-6 md:px-8 pb-4 sm:pb-6 flex flex-col justify-end">
-                      <p className="text-base sm:text-lg md:text-xl font-bold text-white">{category}</p>
-                      <p className="mt-2 text-xs sm:text-sm font-bold text-white underline">
-                        SHOP NOW
-                      </p>
-                    </div>
-                  </Link>
-                </motion.div>
-              )
-            })}
-          </motion.div>
-        </div>
-      </motion.section>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-start">
+            {/* Hoodies */}
+            <Link to="/shop?category=Hoodies" className="relative w-full h-[380px] rounded-2xl overflow-hidden cursor-pointer group block">
+              <img src="/Rectangle 12.png" alt="Hoodies" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+              <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/70 to-transparent pointer-events-none"></div>
+              <div className="absolute bottom-0 left-0 p-6">
+                <h3 className="text-white text-lg font-bold">HOODIES</h3>
+                <p className="text-white text-xs font-bold underline mt-2">SHOP NOW</p>
+              </div>
+            </Link>
 
+            {/* Oversized Tees */}
+            <Link to="/shop?category=Tees" className="relative w-full h-[380px] rounded-2xl overflow-hidden cursor-pointer group block">
+              <img src="/Rectangle 13.png" alt="Oversized Tees" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+              <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/70 to-transparent pointer-events-none"></div>
+              <div className="absolute bottom-0 left-0 p-6">
+                <h3 className="text-white text-lg font-bold">OVERSIZED TEES</h3>
+                <p className="text-white text-xs font-bold underline mt-2">SHOP NOW</p>
+              </div>
+            </Link>
+
+            {/* Sneakers */}
+            <Link to="/shop?category=Sneakers" className="relative w-full h-[380px] rounded-2xl overflow-hidden cursor-pointer group block">
+              <img src="/Rectangle 14.png" alt="Sneakers" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+              <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/70 to-transparent pointer-events-none"></div>
+              <div className="absolute bottom-0 left-0 p-6">
+                <h3 className="text-white text-lg font-bold">SNEAKERS</h3>
+                <p className="text-white text-xs font-bold underline mt-2">SHOP NOW</p>
+              </div>
+            </Link>
+
+            {/* Accessories */}
+            <Link to="/shop?category=Accessories" className="relative w-full h-[380px] rounded-2xl overflow-hidden cursor-pointer group block">
+              <img src="/Rectangle 15.png" alt="Accessories" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+              <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/70 to-transparent pointer-events-none"></div>
+              <div className="absolute bottom-0 left-0 p-6">
+                <h3 className="text-white text-lg font-bold">ACCESSORIES</h3>
+                <p className="text-white text-xs font-bold underline mt-2">SHOP NOW</p>
+              </div>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Trending / Most Loved Pieces */}
       <motion.section
         className="relative w-full bg-[#FFFFFF] overflow-hidden py-8 sm:py-10 md:py-12 lg:py-16 px-4 sm:px-6 md:px-8 lg:px-10"
         initial={{ opacity: 0, y: 50 }}
@@ -175,20 +173,11 @@ export default function Home() {
         <div className="mx-auto max-w-7xl">
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6 sm:mb-8">
             <div className="flex flex-col gap-2">
-              <p className="text-xs sm:text-sm font-bold text-black">
-                TRENDING NOW
-              </p>
-              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-black">
-                MOST LOVED PIECES
-              </h2>
+              <p className="text-xs sm:text-sm font-bold text-black">TRENDING NOW</p>
+              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-black">MOST LOVED PIECES</h2>
             </div>
 
-            <Link
-              to="/shop"
-              className="text-xs sm:text-sm font-bold text-black whitespace-nowrap hover:underline"
-            >
-              VIEW ALL →
-            </Link>
+            <Link to="/shop" className="text-xs sm:text-sm font-bold text-black whitespace-nowrap hover:underline">VIEW ALL →</Link>
           </div>
 
           {loading ? (
@@ -215,12 +204,8 @@ export default function Home() {
                         <span className="text-[#888888] text-xl sm:text-2xl">♡</span>
                       </div>
                       <div>
-                        <p className="text-xs sm:text-sm font-bold text-black">
-                          {item.name}
-                        </p>
-                        <p className="text-xs sm:text-sm font-bold text-black mt-2">
-                          {item.price}
-                        </p>
+                        <p className="text-xs sm:text-sm font-bold text-black">{item.name}</p>
+                        <p className="text-xs sm:text-sm font-bold text-black mt-2">{item.price}</p>
                         <div className="mt-3 flex gap-2">
                           <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-[#000000]"></div>
                           <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-[#D9D9D9]"></div>
@@ -229,41 +214,25 @@ export default function Home() {
                       </div>
                     </motion.div>
                   </Link>
-                )
+                );
               })}
             </div>
           )}
         </div>
       </motion.section>
 
-      <motion.section
-        className="w-full flex flex-col md:flex-row"
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-      >
-        {/* Left side - Photo (with overlays) - responsive */}
+      {/* Philosophy / Right Content Section */}
+      <motion.section className="w-full flex flex-col md:flex-row" initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
         <div className="w-full md:w-1/2 lg:w-[600px] h-64 sm:h-80 md:h-full md:min-h-96 lg:min-h-[500px] relative overflow-hidden flex-shrink-0">
-          <img 
-            src="/philosophy-model.webp"
-            alt="Philosophy Model"
-            className="w-full h-full object-cover object-center"
-          />
-          {/* Dark overlay */}
-          <div className="absolute inset-0" style={{background: 'rgba(0,0,0,0.3)'}}></div>
-          {/* Gradient blend to right */}
-          <div className="absolute inset-0" style={{background: 'linear-gradient(to right, transparent 60%, #111111 100%)'}}></div>
+          <img src="/philosophy-model.webp" alt="Philosophy Model" className="w-full h-full object-cover object-center" />
+          <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.3)' }}></div>
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, transparent 60%, #111111 100%)' }}></div>
         </div>
 
-        {/* Right side - Content */}
         <div className="flex-1 bg-[#111111] px-6 pt-8 pb-0 sm:px-8 sm:pt-10 sm:pb-0 md:px-10 md:pt-12 md:pb-0 lg:px-20 lg:pt-16 lg:pb-0 flex flex-col justify-center">
           <p className="text-xs sm:text-sm font-bold text-[#888888] tracking-widest">OUR PHILOSOPHY</p>
-
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight w-full max-w-2xl mt-4 md:mt-6">DESIGNED FOR MOVEMENT. BUILT FOR IDENTITY.</h2>
-
           <p className="text-xs sm:text-sm md:text-base text-[#888888] w-full max-w-lg leading-relaxed mt-4 md:mt-6">UrbanWear is more than clothing. Its a mindset. Inspired by the streets. Crafted with purpose.</p>
-
           <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} transition={{ duration: 0.2 }} className="w-40 sm:w-48 h-10 sm:h-12 md:h-14 bg-white text-[#000000] text-xs sm:text-sm md:text-base font-bold mt-8 md:mt-10 hover:bg-gray-100 transition-colors rounded">LEARN MORE →</motion.button>
         </div>
       </motion.section>
